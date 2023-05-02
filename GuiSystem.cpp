@@ -100,15 +100,12 @@ int GuiSystem::waitForChoosingMove(ListOfPair* valid_moves){
         cout<<"Vo trong loop lan thu: "<<count<<'\n';
         this->delay(1000);  
         if (this->pollEvent(event) !=0){
-            cout<<"go into if\n";
-            // cout<<"Dang trong loop lan thu: "<<count<<'\n';
             cout<<SDL_MOUSEBUTTONDOWN<<"\n";
-            // cout<<"Ma event hien tai:"<<event->type<<endl;
-            // if (event->type==SDL_QUIT){
-            //     looping = false;
-            //     break;
-            // }
-            cout<<"Dang trong loop lan thu: "<<count<<'\n';
+            cout<<"Ma event hien tai:"<<event->type<<endl;
+            if (event->type==SDL_QUIT){
+                looping = false;
+                break;
+            }
             if (event->type==SDL_MOUSEBUTTONDOWN){
                 cout<<"9.2.1.1\n";
                 cout<<"Dang trong loop lan thu: "<<count<<'\n';
