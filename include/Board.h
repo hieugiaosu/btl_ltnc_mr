@@ -2,22 +2,24 @@
 #define BOARD_H
 
 #include <bits/stdc++.h>
+#include "ListOfPair.h"
     using namespace std;
 #define BOARD_SIZE 8
 class Board{
     private:
-        vector<vector<int> > board;
+        int** board;
     public:
         Board();
-        Board(vector<vector<int> > board);
-        void setBoardState(vector<vector<int> > board);
-        bool validMoveCheck(pair<int,int> move, int turn);
-        vector<pair<int,int> > getValidMoves(int turn);
-        void changeBoardState(pair<int,int> move,int turn);
-        vector<vector<int> > getCurrBoardState();
+        Board(int** board);
+        void setBoardState(int** board);
+        bool validMoveCheck(int row, int col, int turn);
+        ListOfPair* getValidMoves(int turn);
+        void changeBoardState(int row, int col,int turn);
+        int**getCurrBoardState();
         bool terminateBoardStateCheck();
         int getWinner();
         void reset();
+        // void freeList(int** list, int n);
         ~Board();
 };
 #endif

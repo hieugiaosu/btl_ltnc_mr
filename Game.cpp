@@ -14,20 +14,25 @@ Game::Game(Player* player1, Player* player2, Board* board, GuiSystem *gui){
 void Game::gameLoop(){
     int turn = 1;
     bool looping = true;
-    pair<int,int> move;
+    int* move;
     this->gui->init();
     while (looping){
-        vector<vector<int> > curr = this->board->getCurrBoardState();
+        int** curr = this->board->getCurrBoardState();
+        cout<<"7\n";
         this->gui->drawCurrState(curr);
-        if (turn == 1) move = this->player1->make_move(*this->board,this->gui);
-        else move = this->player2->make_move(*this->board,this->gui);
-        this->board->changeBoardState(move,turn);
+        cout<<"8\n";
+        if (turn == 1) move = this->player1->make_move(this->board,this->gui);
+        else move = this->player2->make_move(this->board,this->gui);
+        cout<<"9\n";
+        this->board->changeBoardState(move[0],move[1],turn);
+        this->gui->delayMiliSeconds(1000);
         // std::this_thread::sleep_for(std::chrono::seconds(1));
         // sleep_for(nanoseconds(10));
         // sleep_until(system_clock::now() + seconds(1));
         // sleep(1);
         // std::this_thread::sleep_for(std::chrono::seconds(1));
         turn*=-1;
+        delete[] move;
         curr = this->board->getCurrBoardState();
         this->gui->drawCurrState(curr);
         looping = !this->board->terminateBoardStateCheck();

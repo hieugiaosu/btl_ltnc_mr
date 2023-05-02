@@ -1,26 +1,35 @@
 #include "include/Board.h"
 
 Board::Board(){
-    this->board = vector<vector<int> >(8,vector<int>(8,0));
+    this->board = new int*[BOARD_SIZE];
+    for(int i=0;i<BOARD_SIZE;i++){
+        this->board[i] = new int[BOARD_SIZE];
+        for (int j=0;j<BOARD_SIZE;j++) this->board[i][j] = 0;
+    }
     this->board[3][3] = this->board[4][4] = 1;
     this->board[3][4] = this->board[4][3] = -1; 
+
 }
 
-Board::Board(vector<vector<int> > board){
-    this->board = board;
+Board::Board(int** board){
+    this->board = new int*[BOARD_SIZE];
+    for(int i=0;i<BOARD_SIZE;i++){
+        this->board[i] = new int[BOARD_SIZE];
+        for (int j=0;j<BOARD_SIZE;j++) this->board[i][j] = board[i][j];
+    }
 }
 
-void Board::setBoardState(vector<vector<int> > board){
-    this->board = board;
+void Board::setBoardState(int** board){
+    for(int i=0;i<BOARD_SIZE;i++){
+        for (int j=0;j<BOARD_SIZE;j++) this->board[i][j] = board[i][j];
+    }
 }
 
-vector<vector<int> > Board::getCurrBoardState(){
+int** Board::getCurrBoardState(){
     return this->board;
 }
 
-void Board::changeBoardState(pair<int,int> move, int turn){
-    int row = move.first;
-    int col = move.second;
+void Board::changeBoardState(int row, int col, int turn){
     if (row==BOARD_SIZE && col==BOARD_SIZE) return;
     int r,c;
     bool flipped;
@@ -55,9 +64,7 @@ void Board::changeBoardState(pair<int,int> move, int turn){
 }
 
 
-bool Board::validMoveCheck(pair<int,int> move,int turn){
-    int row = move.first;
-    int col = move.second;
+bool Board::validMoveCheck(int row, int col ,int turn){
     if (this->board[row][col]!=0) return 0;
     int r,c;
     bool found_oponent;
@@ -82,24 +89,35 @@ bool Board::validMoveCheck(pair<int,int> move,int turn){
     return 0;
 }
 
-vector<pair<int,int> > Board::getValidMoves(int turn){
-    vector<pair<int,int> > moves;
+ListOfPair* Board::getValidMoves(int turn){
+    vector<vector<int> > moves;
     for (int i=0;i<BOARD_SIZE;i++){
         for (int j=0;j<BOARD_SIZE;j++) {
-            pair<int,int> move = pair<int,int>(i,j);
-            if (this->validMoveCheck(move,turn)){
-                moves.push_back(move);
+            if (this->validMoveCheck(i,j,turn)){
+                moves.push_back({i,j});
             }
         }
     }
-    if (moves.size()==0) moves.push_back(pair<int,int>(BOARD_SIZE,BOARD_SIZE));
-    return moves;
+    if (moves.size()==0) return NULL;
+    ListOfPair* ans = new ListOfPair(moves.size());
+    for (int i=0;i<moves.size();i++) {
+        ans->add(moves[i][0],moves[i][1]);
+    }
+    return ans;
 }
 
 bool Board::terminateBoardStateCheck(){
-    vector<pair<int,int> > valid1 = this->getValidMoves(1);
-    vector<pair<int,int> > valid2 = this->getValidMoves(-1);
-    return (valid1[0].first==BOARD_SIZE && valid1[0].second==BOARD_SIZE && valid2[0].first==BOARD_SIZE && valid2[0].second==BOARD_SIZE);
+    ListOfPair* valid1 = this->getValidMoves(1);
+    if (valid1 != NULL) {
+        delete valid1;
+        return false;
+    }
+    ListOfPair* valid2 = this->getValidMoves(-1);
+    if (valid2 != NULL) {
+        delete valid2;
+        return false;
+    }
+    return true;
 }
 
 int Board::getWinner(){
@@ -115,25 +133,26 @@ int Board::getWinner(){
 }
 
 void Board::reset(){
-    this->board = vector<vector<int> >(8,vector<int>(8,0));
+    for (int i=0;i<BOARD_SIZE;i++){
+        for (int j=0;j<BOARD_SIZE;j++){
+            this->board[i][j] = 0;
+        }
+    }
     this->board[3][3] = this->board[4][4] = 1;
     this->board[3][4] = this->board[4][3] = -1; 
 }
 
-Board::~Board(){}
-
-// void printBoard(vector<vector<int> > board){
-//     for (int i=0;i<8;i++){
-//         for (int j=0;j<8;j++) cout<<board[i][j]<<"  ";
-//         cout<<endl;
+// void Board::freeList(int** list, int n){
+//     for (int i = 0;i<n;i++) {
+//         delete list[i];
 //     }
+//     delete list;
 // }
 
-// int main(){
-//     Board board;
-//     printBoard(board.getCurrBoardState());
-//     board.changeBoardState(pair<int,int>(3,5),1);
-//     cout<<"------------------\n";
-//     printBoard(board.getCurrBoardState());
-//     return 0;
-// }
+Board::~Board(){
+    for (int i=0;i<BOARD_SIZE;i++) {
+        delete[] this->board[i];
+    }
+    delete[] this->board;
+}
+

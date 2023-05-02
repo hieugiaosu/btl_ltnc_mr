@@ -2,7 +2,9 @@
 #define GUISYSTEM_H
 #include<Windows.h>
 #include<bits/stdc++.h>
+#include "ListOfPair.h"
 #define LIBRARY L"SDL2.dll"
+#define BOARD_SIZE 8
 #define SDL_WINDOWPOS_CENTERED 0x2FFF0000
 #define SDL_RENDERER_ACCELERATED 0x00000002
 #define SDL_MOUSEBUTTONDOWN 0x0401
@@ -34,6 +36,7 @@ typedef int (*SDL_RenderDrawLine_ptr)(void*, int, int, int, int);
 typedef void (*SDL_RenderDrawPoint_ptr)(void*, int,int);
 typedef int (*SDL_POLLEvent_ptr)(void*);
 typedef Uint32 (*SDL_GetMouseState_ptr)(int *, int*);
+typedef void (*SDL_Delay_ptr)(Uint32);
 using namespace std;
 class GuiSystem{
 private:
@@ -47,6 +50,7 @@ private:
     SDL_RenderDrawPoint_ptr renderDrawPoint;
     SDL_POLLEvent_ptr pollEvent;
     SDL_GetMouseState_ptr getMouseState;
+    SDL_Delay_ptr delay;
     HINSTANCE lib;
     void * pwindow;
     void * prender;
@@ -55,8 +59,9 @@ public:
     void init();
     void drawBoard();
     void drawCircle(int x, int y, int radius,int r, int g, int b, int a);
-    void drawCurrState(vector<vector<int> > board);
-    int waitForChoosingMove(vector<pair<int,int> > valid_moves);
+    void drawCurrState(int** board);
+    void delayMiliSeconds(Uint32 n);
+    int waitForChoosingMove(ListOfPair* valid_moves);
     ~GuiSystem();
 };
 #endif

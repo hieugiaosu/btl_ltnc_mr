@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Board.h"
 #include "GuiSystem.h"
+#include "ListOfPair.h"
     using namespace std;
 class Game{
     private:

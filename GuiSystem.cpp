@@ -14,6 +14,7 @@ GuiSystem::GuiSystem(){
     this->renderDrawPoint = (SDL_RenderDrawPoint_ptr)GetProcAddress(this->lib,"SDL_RenderDrawPoint");
     this->pollEvent = (SDL_POLLEvent_ptr)GetProcAddress(this->lib,"SDL_PollEvent");
     this->getMouseState = (SDL_GetMouseState_ptr)GetProcAddress(this->lib,"SDL_GetMouseState");
+    this->delay = (SDL_Delay_ptr)GetProcAddress(this->lib,"SDL_Delay");
 }
 
 GuiSystem::~GuiSystem(){
@@ -58,15 +59,19 @@ void GuiSystem::drawCircle(int x,int y, int radius, int r, int g, int b, int a){
     this->renderPresent(this->prender);
 }
 
-void GuiSystem::drawCurrState(std::vector<std::vector<int> > board){
+void GuiSystem::delayMiliSeconds(Uint32 n){
+    this->delay(n);
+}
+
+void GuiSystem::drawCurrState(int** board){
     this->renderClear(this->prender);
     this->drawBoard();
     int x_offset = (WINDOW_WITDH - 8*CELLWITDH)/2;
     int y_offset = (WINDOW_HEIGHT - 8*CELLWITDH)/2;
     int x,y;
     int radius = CELLWITDH/2;
-    for (int row=0;row<board.size();row++){
-        for (int col=0;col<board.size();col++) {
+    for (int row=0;row<BOARD_SIZE;row++){
+        for (int col=0;col<BOARD_SIZE;col++) {
             x = x_offset + col*CELLWITDH;
             y = y_offset + row*CELLWITDH;
             if (board[row][col]==1) this->drawCircle(x+radius,y+radius,radius,WHITE);
@@ -76,29 +81,41 @@ void GuiSystem::drawCurrState(std::vector<std::vector<int> > board){
 
 }
 
-int GuiSystem::waitForChoosingMove(vector<pair<int,int> > valid_moves){
-    if (valid_moves[0].first==8 && valid_moves[0].second==8) return 0;
-    int ** move_ptr = new int*[valid_moves.size()];
-    for (int i=0;i<valid_moves.size();i++) {
+int GuiSystem::waitForChoosingMove(ListOfPair* valid_moves){
+    if (valid_moves == NULL) return -1;
+    int ** move_ptr = new int*[valid_moves->getSize()];
+    for (int i=0;i<valid_moves->getSize();i++) {
         move_ptr[i] = new int[2];
-        move_ptr[i][0] = valid_moves[i].first;
-        move_ptr[i][1] = valid_moves[i].second; 
+        move_ptr[i][0] = valid_moves[0][i][0];
+        move_ptr[i][1] = valid_moves[0][i][1]; 
     }
-    void * event;
+    SDL_Event*  event;
     int ans = 0;
     int x_offset = (WINDOW_WITDH-8*CELLWITDH)/2;
     int y_offset = (WINDOW_HEIGHT-8*CELLWITDH)/2;
     bool looping = true;
-    while (looping){  
-        if (this->pollEvent(event)){
-            if (((SDL_Event*)(event))->type==SDL_QUIT){
-                looping = false;
-                break;
-            }
-            if (((SDL_Event*)(event))->type==SDL_MOUSEBUTTONDOWN){
+    int count=0;
+    while (looping){
+        count++;
+        cout<<"Vo trong loop lan thu: "<<count<<'\n';
+        this->delay(1000);  
+        if (this->pollEvent(event) !=0){
+            cout<<"go into if\n";
+            // cout<<"Dang trong loop lan thu: "<<count<<'\n';
+            cout<<SDL_MOUSEBUTTONDOWN<<"\n";
+            // cout<<"Ma event hien tai:"<<event->type<<endl;
+            // if (event->type==SDL_QUIT){
+            //     looping = false;
+            //     break;
+            // }
+            cout<<"Dang trong loop lan thu: "<<count<<'\n';
+            if (event->type==SDL_MOUSEBUTTONDOWN){
+                cout<<"9.2.1.1\n";
+                cout<<"Dang trong loop lan thu: "<<count<<'\n';
                 int x,y;
                 this->getMouseState(&x,&y);
-                for (int i=0;i<valid_moves.size();i++){
+                for (int i=0;i<valid_moves->getSize();i++){
+                    cout<<"9.2.1.2\n";
                     if ((x > (x_offset+move_ptr[i][1]*CELLWITDH))
                     && (x < (x_offset+(move_ptr[i][1]+1)*CELLWITDH))
                     && (y > (y_offset+move_ptr[i][0]*CELLWITDH))
@@ -109,9 +126,12 @@ int GuiSystem::waitForChoosingMove(vector<pair<int,int> > valid_moves){
                     }
                 }
             }
+            cout<<"Dang trong loop lan thu: "<<count<<'\n';
         }
+        cout<<"het lan loop thu: "<<count<<'\n';
     }
-    for (int i=0;i<valid_moves.size();i++) delete move_ptr[i];
-    delete move_ptr;
+    for (int i=0;i<valid_moves->getSize();i++) delete[] move_ptr[i];
+    cout<<"9.2.2\n";
+    delete[] move_ptr;
     return ans;
 }
