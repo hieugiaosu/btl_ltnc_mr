@@ -10,8 +10,8 @@ int* ComputerLV1::make_move(Board* board, void *ptr ){
     if (valid_moves == NULL) return NULL;
     int idx = (int)rand()%(valid_moves->getSize());
     int* ans = new int[2];
-    ans[0] = *valid_moves[idx][0];
-    ans[1] = *valid_moves[idx][1];
+    ans[0] = valid_moves[0][idx][0];
+    ans[1] = valid_moves[0][idx][1];
     delete valid_moves;
     return ans;
 }
@@ -48,6 +48,7 @@ int ComputerLV2::heuristic(int** board, int turn){
             if (board[i][j]==-1*turn) score -=heuristicTable[i][j];
         }
     } 
+    return score;
 }
 
 int* ComputerLV2::bestmove(Board* curr,int** board, int turn, int depth, ListOfPair* valid_moves,int min1, int min2){
@@ -64,7 +65,7 @@ int* ComputerLV2::bestmove(Board* curr,int** board, int turn, int depth, ListOfP
     for (int i = 0;i<valid_moves->getSize();i++) {
         if (min1>-1*min2) break;
         curr->setBoardState(curr_board);
-        curr->changeBoardState(*valid_moves[i][0],*valid_moves[i][1],turn);
+        curr->changeBoardState(valid_moves[0][i][0],valid_moves[0][i][1],turn);
         score = -1*bestmoveRec(curr,curr->getCurrBoardState(),-1*turn,depth-1,min1,min2);
         if (score > maxScore) {
             maxScore = score;
@@ -75,7 +76,10 @@ int* ComputerLV2::bestmove(Board* curr,int** board, int turn, int depth, ListOfP
     }
     for (int i=0;i<BOARD_SIZE;i++) delete[] curr_board[i];
     delete[] curr_board;
-    return (valid_moves[0][best_move_idx]);
+    int * move = new int[2];
+    move[0] = valid_moves[0][best_move_idx][0];
+    move[1] = valid_moves[0][best_move_idx][1];
+    return move;
 } 
 
 int ComputerLV2::bestmoveRec(Board* curr,int** board, int turn, int depth,int min1, int min2){
@@ -101,7 +105,7 @@ int ComputerLV2::bestmoveRec(Board* curr,int** board, int turn, int depth,int mi
     for (int i = 0;i<valid_moves->getSize();i++) {
         if (min1>-1*min2) break;
         curr->setBoardState(curr_board);
-        curr->changeBoardState(*valid_moves[i][0],*valid_moves[i][1],turn);
+        curr->changeBoardState(valid_moves[0][i][0],valid_moves[0][i][1],turn);
         score = -1*bestmoveRec(curr,curr->getCurrBoardState(),-1*turn,depth-1,min1,min2);
         if (score > maxScore) {
             maxScore = score;
@@ -122,18 +126,19 @@ HumanPlayer::HumanPlayer(int turn, string name){
 
 int* HumanPlayer::make_move(Board* board, void* ptr){
     GuiSystem * agent = (GuiSystem *)ptr;
-    cout<<"9.1\n";
     ListOfPair* valid_moves = board->getValidMoves(this->turn);
-    cout<<"9.2\n";
+    int x_offset = (WINDOW_WITDH-8*CELLWITDH)/2;
+    int y_offset = (WINDOW_HEIGHT-8*CELLWITDH)/2;
+    for (int i=0;i<valid_moves->getSize();i++){
+        int x = x_offset + valid_moves[0][i][1]*CELLWITDH;
+        int y = y_offset + valid_moves[0][i][0]*CELLWITDH;
+        agent->drawCircle(x+CELLWITDH/2,y+CELLWITDH/2,CELLWITDH/2,GREY);
+    }
     int idx = agent->waitForChoosingMove(valid_moves);
-    cout<<"9.3\n";
     if (idx == -1) return NULL;
-    cout<<"9.4\n";
     int* move = new int[2];
-    move[0] = *valid_moves[idx][0];
-    move[1] = *valid_moves[idx][1];
-    cout<<"9.5\n";
+    move[0] = valid_moves[0][idx][0];
+    move[1] = valid_moves[0][idx][1];
     delete valid_moves;
-    cout<<"9.6\n";
     return move; 
 }

@@ -28,7 +28,7 @@ void ListOfPair::add(int a, int b){
 int ListOfPair::getSize(){ return this->size; }
 
 int* ListOfPair::operator[](int i){
-        // if (i>=this->size) throw std::out_of_range("Invalid index");
+        if (i<0) throw std::out_of_range("Invalid index");
         return this->list[i];
     }
 

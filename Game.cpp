@@ -18,23 +18,15 @@ void Game::gameLoop(){
     this->gui->init();
     while (looping){
         int** curr = this->board->getCurrBoardState();
-        cout<<"7\n";
         this->gui->drawCurrState(curr);
-        cout<<"8\n";
         if (turn == 1) move = this->player1->make_move(this->board,this->gui);
         else move = this->player2->make_move(this->board,this->gui);
-        cout<<"9\n";
         this->board->changeBoardState(move[0],move[1],turn);
-        this->gui->delayMiliSeconds(1000);
-        // std::this_thread::sleep_for(std::chrono::seconds(1));
-        // sleep_for(nanoseconds(10));
-        // sleep_until(system_clock::now() + seconds(1));
-        // sleep(1);
-        // std::this_thread::sleep_for(std::chrono::seconds(1));
         turn*=-1;
         delete[] move;
         curr = this->board->getCurrBoardState();
         this->gui->drawCurrState(curr);
+        this->gui->delayMiliSeconds(100);
         looping = !this->board->terminateBoardStateCheck();
     }
 }

@@ -89,7 +89,7 @@ int GuiSystem::waitForChoosingMove(ListOfPair* valid_moves){
         move_ptr[i][0] = valid_moves[0][i][0];
         move_ptr[i][1] = valid_moves[0][i][1]; 
     }
-    SDL_Event*  event;
+    SDL_Event event;
     int ans = 0;
     int x_offset = (WINDOW_WITDH-8*CELLWITDH)/2;
     int y_offset = (WINDOW_HEIGHT-8*CELLWITDH)/2;
@@ -97,22 +97,16 @@ int GuiSystem::waitForChoosingMove(ListOfPair* valid_moves){
     int count=0;
     while (looping){
         count++;
-        cout<<"Vo trong loop lan thu: "<<count<<'\n';
-        this->delay(1000);  
-        if (this->pollEvent(event) !=0){
-            cout<<SDL_MOUSEBUTTONDOWN<<"\n";
-            cout<<"Ma event hien tai:"<<event->type<<endl;
-            if (event->type==SDL_QUIT){
+        if (this->pollEvent(&event) !=0){
+            if (event.type==SDL_QUIT){
                 looping = false;
+                throw std::terminate;
                 break;
             }
-            if (event->type==SDL_MOUSEBUTTONDOWN){
-                cout<<"9.2.1.1\n";
-                cout<<"Dang trong loop lan thu: "<<count<<'\n';
+            if (event.type==SDL_MOUSEBUTTONDOWN){
                 int x,y;
                 this->getMouseState(&x,&y);
                 for (int i=0;i<valid_moves->getSize();i++){
-                    cout<<"9.2.1.2\n";
                     if ((x > (x_offset+move_ptr[i][1]*CELLWITDH))
                     && (x < (x_offset+(move_ptr[i][1]+1)*CELLWITDH))
                     && (y > (y_offset+move_ptr[i][0]*CELLWITDH))
@@ -123,12 +117,9 @@ int GuiSystem::waitForChoosingMove(ListOfPair* valid_moves){
                     }
                 }
             }
-            cout<<"Dang trong loop lan thu: "<<count<<'\n';
         }
-        cout<<"het lan loop thu: "<<count<<'\n';
     }
     for (int i=0;i<valid_moves->getSize();i++) delete[] move_ptr[i];
-    cout<<"9.2.2\n";
     delete[] move_ptr;
     return ans;
 }
