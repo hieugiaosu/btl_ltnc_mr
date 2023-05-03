@@ -21,6 +21,10 @@ void Game::gameLoop(){
         this->gui->drawCurrState(curr);
         if (turn == 1) move = this->player1->make_move(this->board,this->gui);
         else move = this->player2->make_move(this->board,this->gui);
+        if (move == NULL) {
+            turn*=-1;
+            continue;
+        }
         this->board->changeBoardState(move[0],move[1],turn);
         turn*=-1;
         delete[] move;

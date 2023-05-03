@@ -100,7 +100,7 @@ int GuiSystem::waitForChoosingMove(ListOfPair* valid_moves){
         if (this->pollEvent(&event) !=0){
             if (event.type==SDL_QUIT){
                 looping = false;
-                throw std::terminate;
+                throw Terminate_program();
                 break;
             }
             if (event.type==SDL_MOUSEBUTTONDOWN){

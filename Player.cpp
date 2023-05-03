@@ -23,6 +23,7 @@ ComputerLV2::ComputerLV2(int turn,string name){
 
 int* ComputerLV2::make_move(Board* board, void *ptr ){
     ListOfPair* valid_moves = board->getValidMoves(this->turn);
+    if (valid_moves == NULL) return NULL;
     Board* curr = new Board();
     int* best_move = this->bestmove(curr,board->getCurrBoardState(),this->turn,5,valid_moves,-1*INFINITY_VALUE,-1*INFINITY_VALUE);
     delete curr;
@@ -127,6 +128,7 @@ HumanPlayer::HumanPlayer(int turn, string name){
 int* HumanPlayer::make_move(Board* board, void* ptr){
     GuiSystem * agent = (GuiSystem *)ptr;
     ListOfPair* valid_moves = board->getValidMoves(this->turn);
+    if (valid_moves == NULL) return NULL;
     int x_offset = (WINDOW_WITDH-8*CELLWITDH)/2;
     int y_offset = (WINDOW_HEIGHT-8*CELLWITDH)/2;
     for (int i=0;i<valid_moves->getSize();i++){

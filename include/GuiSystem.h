@@ -2,7 +2,6 @@
 #define GUISYSTEM_H
 #include<Windows.h>
 #include<bits/stdc++.h>
-#include <stdexcept>
 #include "ListOfPair.h"
 #include "Event_type.h"
 #define LIBRARY L"SDL2.dll"

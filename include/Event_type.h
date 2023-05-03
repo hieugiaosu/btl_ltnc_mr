@@ -1,6 +1,13 @@
 #ifndef EVENT_TYPE_H
 #define EVENT_TYPE_H
 #include <cstdint>
+#include <stdexcept>
+class Terminate_program : public std::exception{
+    public:
+        virtual const char* what() const throw(){
+            return "Program is forced to be terminated by user";
+        }
+};
 typedef unsigned int Uint32;
 typedef uint8_t Uint8;
 typedef int Sint32;
